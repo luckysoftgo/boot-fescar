@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.application.base.storage.dao.FescarStorageMapper">
+
+	<!-- 输出列 -->
+	<sql id="baseColumnList">
+		u.id as id ,
+		u.disabled as disabled ,
+		u.uuid as uuid ,
+		u.info_desc as infoDesc ,
+		u.create_user as createUser ,
+		u.create_time as createTime ,
+		u.update_user as updateUser ,
+		u.update_time as updateTime ,
+		u.goods_code as goodsCode ,
+		u.goods_count as goodsCount 
+	</sql>
+	
+	
+	<!-- 查询的列 -->
+	<sql id="searchCriteria">
+        <include refid="Util.baseSelect" />
+		<if test="goodsCode != null and goodsCode != ''">
+		and u.goods_code = #{goodsCode,jdbcType=VARCHAR}
+		</if>
+		<if test="goodsCodeLike != null and goodsCodeLike != ''">
+		and u.goods_code like CONCAT('%',#{goodsCodeLike,jdbcType=VARCHAR},'%') 
+		</if>
+		<if test="goodsCount != null and goodsCount !=-1  ">
+		and u.goods_count = #{goodsCount,jdbcType=NUMERIC}
+		</if>
+	</sql>
+
+    <!-- 修改条件 -->
+    <sql id="updateColumnWhere">
+        <set>
+            u.create_time = #{createTime,jdbcType=TIMESTAMP}
+            <if test="disabled != null and disabled !=-1 ">
+            , u.disabled = #{disabled,jdbcType=NUMERIC}
+            </if>
+            <if test="infoDesc != null and infoDesc != ''">
+            , u.info_desc = #{infoDesc,jdbcType=VARCHAR}
+            </if>
+            <if test="updateUser != null and updateUser != ''">
+            , u.update_user = #{updateUser,jdbcType=VARCHAR}
+            </if>
+            <if test="updateTime != null ">
+            , u.update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="goodsCode != null and goodsCode != ''">
+            , u.goods_code = #{goodsCode,jdbcType=VARCHAR}
+            </if>
+            <if test="goodsCount != null and goodsCount !=-1 ">
+            , u.goods_count = #{goodsCount,jdbcType=NUMERIC}
+            </if>
+        </set>
+    </sql>
+
+
+    <!-- 保存对象 -->
+    <insert id="saveFescarStorage" parameterType="com.application.base.storage.entity.FescarStorage" >
+        insert into fescar_storage (
+			disabled,
+			uuid,
+			info_desc,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			goods_code,
+			goods_count
+        ) values (
+			#{disabled,jdbcType=NUMERIC},
+			#{uuid,jdbcType=VARCHAR},
+			#{infoDesc,jdbcType=VARCHAR},
+			#{createUser,jdbcType=VARCHAR},
+			#{createTime,jdbcType=TIMESTAMP},
+			#{updateUser,jdbcType=VARCHAR},
+			#{updateTime,jdbcType=TIMESTAMP},
+			#{goodsCode,jdbcType=VARCHAR},
+			#{goodsCount,jdbcType=NUMERIC}
+        )
+    </insert>
+
+    <!-- 批量保存对象 -->
+    <insert id="saveFescarStorages" parameterType="java.util.ArrayList" >
+        insert into fescar_storage (
+			disabled,
+			uuid,
+			info_desc,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			goods_code,
+			goods_count
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+        (
+			#{item.disabled,jdbcType=NUMERIC},
+			#{item.uuid,jdbcType=VARCHAR},
+			#{item.infoDesc,jdbcType=VARCHAR},
+			#{item.createUser,jdbcType=VARCHAR},
+			#{item.createTime,jdbcType=TIMESTAMP},
+			#{item.updateUser,jdbcType=VARCHAR},
+			#{item.updateTime,jdbcType=TIMESTAMP},
+			#{item.goodsCode,jdbcType=VARCHAR},
+			#{item.goodsCount,jdbcType=NUMERIC}
+        )
+        </foreach>
+    </insert>
+
+
+    <!-- 修改 -->
+    <update id="updateFescarStorage" parameterType="com.application.base.storage.entity.FescarStorage">
+        update fescar_storage u
+        	<include refid="updateColumnWhere" />
+        where
+        	u.id = #{id,jdbcType=NUMERIC}
+    </update>
+
+    <!-- 逻辑删除 -->
+    <update id="deleteFescarStorage" parameterType="com.application.base.storage.entity.FescarStorage">
+        update fescar_storage u set u.disabled = 1
+        	<if test="updateTime != null ">
+            ,u.update_time = #{updateTime,jdbcType=TIMESTAMP}
+        	</if>
+        	<if test="updateUser != null and updateUser != ''">
+            ,u.update_user = #{updateUser,jdbcType=VARCHAR}
+        	</if>
+        where
+        	<if test="id != null and id != '' ">
+            u.id = #{id,jdbcType=NUMERIC}
+        	</if>
+    </update>
+
+    <!-- 查询一条数据 -->
+    <select id="queryFescarStorage" parameterType="java.util.Map" resultType="com.application.base.storage.entity.FescarStorage">
+        select
+        	<include refid="baseColumnList" />
+        from
+			fescar_storage u
+        where
+        	u.disabled = 0
+        <include refid="searchCriteria" />
+    </select>
+
+    <!-- 查询所有列表数据 -->
+    <select id="queryFescarStorages" parameterType="java.util.Map" resultType="com.application.base.storage.entity.FescarStorage">
+        select
+        	<include refid="baseColumnList" />
+        from
+			fescar_storage u
+        where
+        	u.disabled = 0
+        <include refid="searchCriteria" />
+        <include refid="Util.orderCriteria" />
+    </select>
+
+    <!-- 查询分页列表数据 -->
+    <select id="queryPageFescarStorages" parameterType="java.util.Map" resultType="com.application.base.storage.entity.FescarStorage">
+        select
+        	<include refid="baseColumnList" />
+        from
+			fescar_storage u
+        where
+        	u.disabled = 0
+        <include refid="searchCriteria" />
+        <include refid="Util.orderCriteria" />
+        <include refid="Util.mysqlPage" />
+    </select>
+
+    <!-- 查询总数 -->
+    <select id="totalCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select
+        	count(u.id)
+        from
+			fescar_storage u
+        where
+        	u.disabled = 0
+        <include refid="searchCriteria" />
+    </select>
+
+</mapper>

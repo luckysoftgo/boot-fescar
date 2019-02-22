@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!-- CustomerSQL 的 namespace 是固定的,不要改动 -->
+<mapper namespace="CustomerSQL">
+
+	<!-- 自动以SQL执行集合 -->
+		
+	<!--根据条件查询审核订单列表-->
+	
+	<!--
+	<select id="findCheckOrderList" parameterType="jutilsutil.Map" resultType="OrderVO">
+		SELECT
+			o.id id,
+			o.face_id faceId,
+			o.shop_id shopId,
+			DATE_FORMAT(o.order_begin_date,"%Y-%m-%d %H:%i:%s") createTimeStr,
+			o.order_begin_date createTime,
+			o.uuid,
+			o.shop_name shopName,
+			o.update_time updateTime,
+			o.status,
+			o.principal,
+			o.order_no orderNo,
+			o.total_parts totalParts,
+			o.employee_id employeeId,
+			o.year_rate yearRate,
+			o.shop_rate shopRate,
+			DATE_FORMAT(o.lending_time,"%Y-%m-%d %H:%i:%s") orderBeginDate,
+			o.shop_confirm_time shopConfirmTime,
+			u.mobile,
+			u.id userId,
+			u.username,
+			u.uuid userUUID,
+			ud.name,
+			ud.idcard
+		FROM ORD_ORDER o
+			LEFT JOIN ORD_USER u ON u.id = o.create_user
+			LEFT JOIN ORD_USER_DETAIL ud ON ud.user_id = o.create_user
+			LEFT JOIN ORD_ORDER_CHECK_HISTORY ooch ON o.id = ooch.order_id
+		WHERE
+			ooch.create_user = #{createUser,jdbcType=NUMERIC}
+			and o.disabled = 0
+			and u.disabled = 0
+			and ud.disabled = 0
+			and ooch.disabled = 0
+		<if test="orderNo != null">
+			AND o.order_no LIKE concat('%',#{orderNo},'%')
+		</if>
+		<if test="name != null">
+			AND ud.name LIKE concat('%',#{name,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="username != null">
+			AND u.username LIKE concat('%',#{username,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="mobile != null">
+			AND u.mobile LIKE concat('%',#{mobile,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="status != null">
+			AND o.status = #{status,jdbcType=VARCHAR}
+		</if>
+		<if test="shopId != null">
+			AND o.shop_id = #{shopId,jdbcType=INTEGER}
+		</if>
+		<if test="faceId != null">
+			AND o.face_id = #{faceId,jdbcType=INTEGER}
+		</if>
+		<if test="shopName != null">
+			AND o.shop_name = #{shopName,jdbcType=INTEGER}
+		</if>
+		<if test="shopNameLike != null">
+		 	AND o.shop_name LIKE concat('%',#{shopNameLike,jdbcType=VARCHAR},'%')
+        </if>
+		<if test="faceIds != null" >
+			AND o.face_id in (${faceIds})
+		</if>
+		<if test="updateTime != null">
+			AND date_format(o.update_time,'%Y-%m-%d') = #{updateTime,jdbcType=INTEGER}
+		</if>
+		<if test="statusList !=null">
+			AND o.status in (${statusList})
+		</if>
+		<if test="notStatus1 != null">
+			AND o.status <![CDATA[ <> ]]> #{notStatus1,jdbcType=VARCHAR}
+		</if>
+		<if test="startTime != null">
+			AND o.update_time &gt;= #{startTime,jdbcType=VARCHAR}
+		</if>
+		<if test="endTime != null">
+			AND o.update_time &lt;= #{endTime,jdbcType=VARCHAR}
+		</if>
+		<if test="isOnline != null">
+			AND o.IS_ONLINE = #{isOnline,jdbcType=INTEGER}
+		</if>
+		<if test="loanStartTime != null">
+			AND o.lending_time &gt;= #{loanStartTime,jdbcType=VARCHAR}
+		</if>
+		<if test="loanEndTime != null">
+			AND o.lending_time &lt;= #{loanEndTime,jdbcType=VARCHAR}
+		</if>
+		<if test="createStartTime != null">
+			AND o.order_begin_date &gt;= #{createStartTime,jdbcType=VARCHAR}
+		</if>
+		<if test="createEndTime != null">
+			AND o.order_begin_date &lt;= #{createEndTime,jdbcType=VARCHAR}
+		</if>
+            group by o.id
+			order by ooch.id desc
+		<include refid="Util.mysqlPage" />
+
+	</select>
+	 -->
+	
+	<!--根据条件查询审核订单列表-->
+	<!-- 
+	<select id="findCheckOrderListCount" parameterType="jutilsutil.Map" resultType="java.lang.Long">
+		SELECT
+			count(DISTINCT o.id)
+		FROM ORD_ORDER o
+			LEFT JOIN ORD_USER u ON u.id = o.create_user
+			LEFT JOIN ORD_USER_DETAIL ud ON ud.user_id = o.create_user
+			LEFT JOIN ORD_ORDER_CHECK_HISTORY ooch ON o.id = ooch.order_id
+		WHERE
+			ooch.create_user = #{createUser,jdbcType=NUMERIC}
+			and o.disabled = 0
+			and u.disabled = 0
+			and ud.disabled = 0
+			and ooch.disabled = 0
+		<if test="orderNo != null">
+			AND o.order_no LIKE concat('%',#{orderNo},'%')
+		</if>
+		<if test="name != null">
+			AND ud.name LIKE concat('%',#{name,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="username != null">
+			AND u.username LIKE concat('%',#{username,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="mobile != null">
+			AND u.mobile LIKE concat('%',#{mobile,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="status != null">
+			AND o.status = #{status,jdbcType=VARCHAR}
+		</if>
+		<if test="shopId != null">
+			AND o.shop_id = #{shopId,jdbcType=INTEGER}
+		</if>
+		<if test="faceId != null">
+			AND o.face_id = #{faceId,jdbcType=INTEGER}
+		</if>
+		<if test="shopName != null">
+			AND o.shop_name = #{shopName,jdbcType=INTEGER}
+		</if>
+		<if test="shopNameLike != null">
+		 	AND o.shop_name LIKE concat('%',#{shopNameLike,jdbcType=VARCHAR},'%')
+        </if>
+		<if test="faceIds != null" >
+			AND o.face_id in (${faceIds})
+		</if>
+		<if test="updateTime != null">
+			AND date_format(o.update_time,'%Y-%m-%d') = #{updateTime,jdbcType=INTEGER}
+		</if>
+		<if test="statusList !=null">
+			AND o.status in (${statusList})
+		</if>
+		<if test="notStatus1 != null">
+			AND o.status <![CDATA[ <> ]]> #{notStatus1,jdbcType=VARCHAR}
+		</if>
+		<if test="startTime != null">
+			AND o.update_time &gt;= #{startTime,jdbcType=VARCHAR}
+		</if>
+		<if test="endTime != null">
+			AND o.update_time &lt;= #{endTime,jdbcType=VARCHAR}
+		</if>
+		<if test="isOnline != null">
+			AND o.IS_ONLINE = #{isOnline,jdbcType=INTEGER}
+		</if>
+		<if test="loanStartTime != null">
+			AND o.lending_time &gt;= #{loanStartTime,jdbcType=VARCHAR}
+		</if>
+		<if test="loanEndTime != null">
+			AND o.lending_time &lt;= #{loanEndTime,jdbcType=VARCHAR}
+		</if>
+
+		<if test="createStartTime != null">
+			AND o.order_begin_date &gt;= #{createStartTime,jdbcType=VARCHAR}
+		</if>
+
+		<if test="createEndTime != null">
+			AND o.order_begin_date &lt;= #{createEndTime,jdbcType=VARCHAR}
+		</if>
+	</select>
+	-->
+	
+</mapper>

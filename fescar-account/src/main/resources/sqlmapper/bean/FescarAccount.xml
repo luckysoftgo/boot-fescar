@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.application.base.account.dao.FescarAccountMapper">
+
+	<!-- 输出列 -->
+	<sql id="baseColumnList">
+		u.id as id ,
+		u.disabled as disabled ,
+		u.uuid as uuid ,
+		u.info_desc as infoDesc ,
+		u.create_user as createUser ,
+		u.create_time as createTime ,
+		u.update_user as updateUser ,
+		u.update_time as updateTime ,
+		u.user_id as userId ,
+		u.account_amount as accountAmount 
+	</sql>
+	
+	
+	<!-- 查询的列 -->
+	<sql id="searchCriteria">
+        <include refid="Util.baseSelect" />
+		<if test="userId != null and userId != ''">
+		and u.user_id = #{userId,jdbcType=VARCHAR}
+		</if>
+		<if test="userIdLike != null and userIdLike != ''">
+		and u.user_id like CONCAT('%',#{userIdLike,jdbcType=VARCHAR},'%') 
+		</if>
+		<if test="accountAmount != null and accountAmount !=-1  ">
+		and u.account_amount = #{accountAmount,jdbcType=NUMERIC}
+		</if>
+	</sql>
+
+    <!-- 修改条件 -->
+    <sql id="updateColumnWhere">
+        <set>
+            u.create_time = #{createTime,jdbcType=TIMESTAMP}
+            <if test="disabled != null and disabled !=-1 ">
+            , u.disabled = #{disabled,jdbcType=NUMERIC}
+            </if>
+            <if test="infoDesc != null and infoDesc != ''">
+            , u.info_desc = #{infoDesc,jdbcType=VARCHAR}
+            </if>
+            <if test="updateUser != null and updateUser != ''">
+            , u.update_user = #{updateUser,jdbcType=VARCHAR}
+            </if>
+            <if test="updateTime != null ">
+            , u.update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="userId != null and userId != ''">
+            , u.user_id = #{userId,jdbcType=VARCHAR}
+            </if>
+            <if test="accountAmount != null and accountAmount !=-1 ">
+            , u.account_amount = #{accountAmount,jdbcType=NUMERIC}
+            </if>
+        </set>
+    </sql>
+
+
+    <!-- 保存对象 -->
+    <insert id="saveFescarAccount" parameterType="com.application.base.account.entity.FescarAccount" >
+        insert into fescar_account (
+			disabled,
+			uuid,
+			info_desc,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			user_id,
+			account_amount
+        ) values (
+			#{disabled,jdbcType=NUMERIC},
+			#{uuid,jdbcType=VARCHAR},
+			#{infoDesc,jdbcType=VARCHAR},
+			#{createUser,jdbcType=VARCHAR},
+			#{createTime,jdbcType=TIMESTAMP},
+			#{updateUser,jdbcType=VARCHAR},
+			#{updateTime,jdbcType=TIMESTAMP},
+			#{userId,jdbcType=VARCHAR},
+			#{accountAmount,jdbcType=NUMERIC}
+        )
+    </insert>
+
+    <!-- 批量保存对象 -->
+    <insert id="saveFescarAccounts" parameterType="java.util.ArrayList" >
+        insert into fescar_account (
+			disabled,
+			uuid,
+			info_desc,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			user_id,
+			account_amount
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+        (
+			#{item.disabled,jdbcType=NUMERIC},
+			#{item.uuid,jdbcType=VARCHAR},
+			#{item.infoDesc,jdbcType=VARCHAR},
+			#{item.createUser,jdbcType=VARCHAR},
+			#{item.createTime,jdbcType=TIMESTAMP},
+			#{item.updateUser,jdbcType=VARCHAR},
+			#{item.updateTime,jdbcType=TIMESTAMP},
+			#{item.userId,jdbcType=VARCHAR},
+			#{item.accountAmount,jdbcType=NUMERIC}
+        )
+        </foreach>
+    </insert>
+
+
+    <!-- 修改 -->
+    <update id="updateFescarAccount" parameterType="com.application.base.account.entity.FescarAccount">
+        update fescar_account u
+        	<include refid="updateColumnWhere" />
+        where
+        	u.id = #{id,jdbcType=NUMERIC}
+    </update>
+
+    <!-- 逻辑删除 -->
+    <update id="deleteFescarAccount" parameterType="com.application.base.account.entity.FescarAccount">
+        update fescar_account u set u.disabled = 1
+        	<if test="updateTime != null ">
+            ,u.update_time = #{updateTime,jdbcType=TIMESTAMP}
+        	</if>
+        	<if test="updateUser != null and updateUser != ''">
+            ,u.update_user = #{updateUser,jdbcType=VARCHAR}
+        	</if>
+        where
+        	<if test="id != null and id != '' ">
+            u.id = #{id,jdbcType=NUMERIC}
+        	</if>
+    </update>
+
+    <!-- 查询一条数据 -->
+    <select id="queryFescarAccount" parameterType="java.util.Map" resultType="com.application.base.account.entity.FescarAccount">
+        select
+        	<include refid="baseColumnList" />
+        from
+			fescar_account u
+        where
+        	u.disabled = 0
+        <include refid="searchCriteria" />
+    </select>
+
+    <!-- 查询所有列表数据 -->
+    <select id="queryFescarAccounts" parameterType="java.util.Map" resultType="com.application.base.account.entity.FescarAccount">
+        select
+        	<include refid="baseColumnList" />
+        from
+			fescar_account u
+        where
+        	u.disabled = 0
+        <include refid="searchCriteria" />
+        <include refid="Util.orderCriteria" />
+    </select>
+
+    <!-- 查询分页列表数据 -->
+    <select id="queryPageFescarAccounts" parameterType="java.util.Map" resultType="com.application.base.account.entity.FescarAccount">
+        select
+        	<include refid="baseColumnList" />
+        from
+			fescar_account u
+        where
+        	u.disabled = 0
+        <include refid="searchCriteria" />
+        <include refid="Util.orderCriteria" />
+        <include refid="Util.mysqlPage" />
+    </select>
+
+    <!-- 查询总数 -->
+    <select id="totalCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select
+        	count(u.id)
+        from
+			fescar_account u
+        where
+        	u.disabled = 0
+        <include refid="searchCriteria" />
+    </select>
+
+</mapper>
